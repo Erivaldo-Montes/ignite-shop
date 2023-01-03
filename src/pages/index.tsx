@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Head from 'next/head'
 import { HomeContainer, Product } from '../styles/pages/home'
 import { useKeenSlider } from 'keen-slider/react'
 import 'keen-slider/keen-slider.min.css'
@@ -27,23 +28,34 @@ export default function Home({ products }: HomeProps) {
   })
 
   return (
-    <HomeContainer ref={sliderRef}>
-      {products.map((product) => {
-        return (
-          // permite ser redirecionado dentro da aplicação sem ter recerregar a pagina
-          <Link href={`/product/${product.id}`} key={product.id}>
-            {/* blur hash */}
-            <Product className="keen-slider__slide">
-              <Image src={product.imageUrl} height={520} width={480} alt="" />
-              <footer>
-                <strong>{product.name}</strong>
-                <span>{product.price}</span>
-              </footer>
-            </Product>
-          </Link>
-        )
-      })}
-    </HomeContainer>
+    <>
+      <Head>
+        <title>Home | ignite shop</title>
+      </Head>
+
+      <HomeContainer ref={sliderRef}>
+        {products.map((product) => {
+          return (
+            // permite ser redirecionado dentro da aplicação sem ter recerregar a pagina
+            <Link
+              href={`/product/${product.id}`}
+              key={product.id}
+              // prefetch faze com que ao passar o mouse encima do link já carrege conteúdo
+              prefetch={false}
+            >
+              {/* blur hash */}
+              <Product className="keen-slider__slide">
+                <Image src={product.imageUrl} height={520} width={480} alt="" />
+                <footer>
+                  <strong>{product.name}</strong>
+                  <span>{product.price}</span>
+                </footer>
+              </Product>
+            </Link>
+          )
+        })}
+      </HomeContainer>
+    </>
   )
 }
 
@@ -69,7 +81,6 @@ export const getStaticProps: GetStaticProps = async () => {
     }
   })
 
-  console.log(reponse.data)
   return {
     props: { products },
     revalidate: 60 * 60 * 2, // 2 horas
